@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -233,8 +232,10 @@
       clearInterval(countdownInterval);
       countdownInterval = setInterval(() => {
         countdown--;
-        if (countdown > 0) {
+        if (countdown > 1) {
           timerText.textContent = `Aguarde ${countdown}s`;
+        } else if (countdown === 1) {
+          timerText.textContent = `Aguarde 1`;
         } else {
           clearInterval(countdownInterval);
           timerText.textContent = '';
@@ -242,6 +243,7 @@
         }
       }, 1000);
     }
+
 
     function nextAd() {
       currentAd++;
@@ -258,4 +260,5 @@
     }
   </script>
 </body>
+
 </html>
