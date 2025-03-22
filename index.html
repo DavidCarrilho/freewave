@@ -3,21 +3,30 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Login e Anúncios</title>
+
+  <!-- Suporte a Web App para iOS (fullscreen se adicionado à tela inicial) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Conectar Wi-Fi">
+  <link rel="apple-touch-icon" href="icone.png">
+
   <style>
     * {
       box-sizing: border-box;
     }
 
-    body,
-    html {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       font-family: Arial, sans-serif;
       overflow: hidden;
+      background: #f0f0f0;
     }
 
     .container {
@@ -204,6 +213,11 @@
       } else if (elem.msRequestFullscreen) {
         elem.msRequestFullscreen();
       }
+
+      // Tenta esconder a barra de endereço no iOS
+      setTimeout(() => {
+        window.scrollTo(0, 1);
+      }, 100);
     }
 
     function shuffleArray(array) {
@@ -243,7 +257,6 @@
         }
       }, 1000);
     }
-
 
     function nextAd() {
       currentAd++;
