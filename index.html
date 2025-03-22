@@ -1,12 +1,18 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Login e Anúncios</title>
   <style>
-    body, html {
+    * {
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -14,9 +20,10 @@
       font-family: Arial, sans-serif;
       overflow: hidden;
     }
+
     .container {
-      width: 90%;
-      max-width: 400px;
+      width: 100%;
+      max-width: 360px;
       margin: auto;
       padding: 20px;
       margin-top: 20vh;
@@ -25,6 +32,7 @@
       border-radius: 5px;
       text-align: center;
     }
+
     input {
       width: 100%;
       padding: 12px;
@@ -33,11 +41,13 @@
       border-radius: 5px;
       font-size: 16px;
     }
+
     .error {
       color: red;
       font-size: 14px;
       text-align: left;
     }
+
     button {
       width: 100%;
       background: blue;
@@ -48,10 +58,12 @@
       cursor: pointer;
       font-size: 16px;
     }
+
     button:disabled {
       background: gray;
       cursor: not-allowed;
     }
+
     .appbar {
       display: flex;
       justify-content: space-between;
@@ -61,16 +73,19 @@
       padding: 10px 16px;
       font-size: 18px;
     }
+
     iframe {
       width: 100%;
       height: calc(100vh - 50px);
       border: none;
     }
+
     .hidden {
       display: none;
     }
   </style>
 </head>
+
 <body>
 
   <div class="container" id="loginForm">
@@ -126,9 +141,9 @@
       }
 
       if (isValid) {
+        enterFullscreen();
         document.getElementById('loginForm').classList.add('hidden');
         document.getElementById('adContainer').classList.remove('hidden');
-        enterFullscreen();
         shuffleArray(links);
         loadAd();
       }
@@ -157,7 +172,13 @@
       const timerText = document.getElementById('timerText');
       const closeButton = document.getElementById('closeButton');
 
-      adFrame.src = links[currentAd];
+      let url = links[currentAd];
+
+      if (url.endsWith('.pdf')) {
+        url += '#toolbar=0&navpanes=0&scrollbar=0';
+      }
+
+      adFrame.src = url;
       countdown = 5;
       closeButton.classList.add('hidden');
       timerText.textContent = `Aguarde ${countdown}s`;
@@ -187,4 +208,5 @@
     }
   </script>
 </body>
+
 </html>
