@@ -7,7 +7,6 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Login e Anúncios</title>
 
-  <!-- Suporte a Web App para iOS (fullscreen se adicionado à tela inicial) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Conectar Wi-Fi">
@@ -138,10 +137,19 @@
 
   <div class="container" id="loginForm">
     <h2>Conecte-se</h2>
-    <input type="text" id="name" placeholder="Nome completo">
+    <input type="text" id="name" placeholder="Nome e sobrenome">
     <div class="error" id="nameError"></div>
+
+    <!-- WhatsApp Ativo -->
+    <input type="text" id="whatsapp" placeholder="Número do WhatsApp" maxlength="16" oninput="maskWhatsapp(this)">
+    <div class="error" id="whatsappError"></div>
+
+    <!-- E-mail Comentado -->
+    <!-- 
     <input type="email" id="email" placeholder="E-mail">
     <div class="error" id="emailError"></div>
+    -->
+
     <button class="full-width" onclick="validateAndProceed()">Conectar</button>
   </div>
 
@@ -162,38 +170,64 @@
 
   <script>
     const links = [
-      'https://drive.google.com/file/d/1LSmmhD5or0T5SWTZ3GfrWBuRzdJmSiTK/preview',
-      'https://drive.google.com/file/d/1q3OSLSatQJwTt4j6VubZCpVeWo6r1sHc/preview',
-      'https://drive.google.com/file/d/1gmkV_pQMg44gz9oe6WDwqjWnN2FROKrN/preview',
+      'https://drive.google.com/file/d/1ZfutuLB87VGA-CyQhGG-XOYbaNBZpWar/preview',
+      'https://drive.google.com/file/d/1KNET6sx-nT3ksXDuAZcQfoo1Z5K14hvi/preview',
+      'https://drive.google.com/file/d/1uk303IHn04YODtYZNoB_kmDJG-bIIzm2/preview'
     ];
 
     let currentAd = 0;
     let countdown = 5;
     let countdownInterval;
 
+    function maskWhatsapp(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 11) value = value.slice(0, 11);
+      let formatted = '';
+      if (value.length > 0) formatted = '(' + value.slice(0, 2);
+      if (value.length >= 3) formatted += ') ' + value.slice(2, 7);
+      if (value.length >= 8) formatted += '-' + value.slice(7);
+      input.value = formatted;
+    }
+
+
     function validateAndProceed() {
       const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const nameError = document.getElementById('nameError');
-      const emailError = document.getElementById('emailError');
-      let isValid = true;
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+      // const email = document.getElementById('email').value.trim();
 
+      const nameError = document.getElementById('nameError');
+      const whatsappError = document.getElementById('whatsappError');
+      // const emailError = document.getElementById('emailError');
+
+      let isValid = true;
       const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ'\s-]+$/;
+      const whatsappRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!nameRegex.test(name) || name.length < 3) {
-        nameError.innerText = "Nome inválido. Deve conter pelo menos 3 letras.";
+        nameError.innerText = "Nome inválido. Por favor informe seu nome e sobrenome.";
         isValid = false;
       } else {
         nameError.innerText = "";
       }
 
+      // WhatsApp Ativo
+      if (!whatsappRegex.test(whatsapp)) {
+        whatsappError.innerText = "Número de WhatsApp inválido.";
+        isValid = false;
+      } else {
+        whatsappError.innerText = "";
+      }
+
+      // E-mail Comentado
+      /*
       if (!emailRegex.test(email)) {
         emailError.innerText = "E-mail inválido.";
         isValid = false;
       } else {
         emailError.innerText = "";
       }
+      */
 
       if (isValid) {
         enterFullscreen();
@@ -206,15 +240,10 @@
 
     function enterFullscreen() {
       const elem = document.documentElement;
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 
-      // Tenta esconder a barra de endereço no iOS
       setTimeout(() => {
         window.scrollTo(0, 1);
       }, 100);
@@ -233,7 +262,6 @@
       const closeButton = document.getElementById('closeButton');
 
       let url = links[currentAd];
-
       if (url.endsWith('.pdf')) {
         url += '#toolbar=0&navpanes=0&scrollbar=0';
       }
@@ -260,10 +288,6 @@
 
     function nextAd() {
       currentAd++;
-      const adFrame = document.getElementById('adFrame');
-      const timerText = document.getElementById('timerText');
-      const closeButton = document.getElementById('closeButton');
-
       if (currentAd < links.length) {
         loadAd();
       } else {
