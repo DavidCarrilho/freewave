@@ -2,15 +2,15 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Login e Anúncios</title>
 
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Conectar Wi-Fi">
-  <link rel="apple-touch-icon" href="icone.png">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Conectar Wi-Fi" />
+  <link rel="apple-touch-icon" href="icone.png" />
 
   <style>
     * {
@@ -91,10 +91,32 @@
       height: auto;
     }
 
-    iframe {
+    .iframe-wrapper {
+      position: relative;
       width: 100%;
       height: calc(100vh - 50px);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
       border: none;
+    }
+
+    #saibaMaisBtn {
+      position: absolute;
+      bottom: 10px;
+      left: 5%;
+      width: 90%;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
     }
 
     .hidden {
@@ -137,7 +159,7 @@
 
   <div class="container" id="loginForm">
     <h2>Conecte-se</h2>
-    <input type="text" id="name" placeholder="Nome e sobrenome">
+    <input type="text" id="name" placeholder="Nome e sobrenome" />
     <div class="error" id="nameError"></div>
 
     <!-- WhatsApp Ativo -->
@@ -158,7 +180,10 @@
       <span id="timerText">Aguarde 5s</span>
       <button id="closeButton" class="hidden" onclick="nextAd()">Pular</button>
     </div>
-    <iframe id="adFrame" src=""></iframe>
+    <div class="iframe-wrapper">
+      <iframe id="adFrame" allow="autoplay"></iframe>
+      <a id="saibaMaisBtn" href="#" target="_blank" class="hidden">Saiba mais</a>
+    </div>
   </div>
 
   <div id="finalFeedback" class="hidden feedback-container">
@@ -170,14 +195,34 @@
 
   <script>
     const links = [
-      'https://drive.google.com/file/d/1ZfutuLB87VGA-CyQhGG-XOYbaNBZpWar/preview',
-      'https://drive.google.com/file/d/1KNET6sx-nT3ksXDuAZcQfoo1Z5K14hvi/preview',
-      'https://drive.google.com/file/d/1uk303IHn04YODtYZNoB_kmDJG-bIIzm2/preview'
+      {
+        url: 'https://drive.google.com/file/d/1ZfutuLB87VGA-CyQhGG-XOYbaNBZpWar/preview',
+        link: 'https://onovomercado.com/'
+      },
+      {
+        url: 'https://youtube.com/shorts/a1e1WaNKLSg',
+        link: 'https://onovomercado.com/'
+      },
+      {
+        url: 'https://drive.google.com/file/d/1KNET6sx-nT3ksXDuAZcQfoo1Z5K14hvi/preview',
+        link: 'https://onovomercado.com/'
+      },
     ];
 
     let currentAd = 0;
     let countdown = 5;
     let countdownInterval;
+
+    function isYouTubeUrl(url) {
+      return url.includes("youtube.com") || url.includes("youtu.be");
+    }
+
+    function getYouTubeEmbedUrl(url) {
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]+)/);
+      return match
+        ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1`
+        : null;
+    }
 
     function maskWhatsapp(input) {
       let value = input.value.replace(/\D/g, '');
@@ -244,9 +289,7 @@
       else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
       else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
 
-      setTimeout(() => {
-        window.scrollTo(0, 1);
-      }, 100);
+      setTimeout(() => window.scrollTo(0, 1), 100);
     }
 
     function shuffleArray(array) {
@@ -260,13 +303,25 @@
       const adFrame = document.getElementById('adFrame');
       const timerText = document.getElementById('timerText');
       const closeButton = document.getElementById('closeButton');
+      const saibaMaisBtn = document.getElementById('saibaMaisBtn');
 
-      let url = links[currentAd];
+      let ad = links[currentAd];
+      let url = ad.url;
+
+
       if (url.endsWith('.pdf')) {
         url += '#toolbar=0&navpanes=0&scrollbar=0';
       }
+      if (isYouTubeUrl(url)) {
+        url = getYouTubeEmbedUrl(url);
+      } else if (url.includes('/preview')) {
+        url += '?rm=minimal#toolbar=0&navpanes=0&scrollbar=0';
+      }
 
       adFrame.src = url;
+      saibaMaisBtn.href = ad.link;
+      saibaMaisBtn.classList.remove('hidden');
+
       countdown = 5;
       closeButton.classList.add('hidden');
       timerText.textContent = `Aguarde ${countdown}s`;
